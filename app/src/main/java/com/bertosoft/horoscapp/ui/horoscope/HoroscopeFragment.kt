@@ -42,18 +42,18 @@ class HoroscopeFragment : Fragment() {
         horoscopeAdapter = HoroscopeAdapter(onItemSelected = {
             // Navegamos hacia el activity HoroscopeDetail
             val type = when(it){
-                Aquarius -> HoroscopeModel.Aquarius
-                Aries -> HoroscopeModel.Aries
-                Cancer -> HoroscopeModel.Cancer
-                Capricorn -> HoroscopeModel.Capricorn
-                Gemini -> HoroscopeModel.Gemini
-                Leo -> HoroscopeModel.Leo
-                Libra -> HoroscopeModel.Libra
-                Pisces -> HoroscopeModel.Pisces
-                Sagittarius -> HoroscopeModel.Sagittarius
-                Scorpio -> HoroscopeModel.Scorpio
-                Taurus -> HoroscopeModel.Taurus
-                Virgo -> HoroscopeModel.Virgo
+                Aquarius -> HoroscopeModel.aquarius
+                Aries -> HoroscopeModel.aries
+                Cancer -> HoroscopeModel.cancer
+                Capricorn -> HoroscopeModel.capricorn
+                Gemini -> HoroscopeModel.gemini
+                Leo -> HoroscopeModel.leo
+                Libra -> HoroscopeModel.libra
+                Pisces -> HoroscopeModel.pisces
+                Sagittarius -> HoroscopeModel.sagittarius
+                Scorpio -> HoroscopeModel.scorpio
+                Taurus -> HoroscopeModel.taurus
+                Virgo -> HoroscopeModel.virgo
             }
             findNavController().navigate(
                 HoroscopeFragmentDirections.actionHoroscopeFragmentToHoroscopeDetailActivity(type)

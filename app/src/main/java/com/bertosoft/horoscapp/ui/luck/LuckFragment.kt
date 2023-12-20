@@ -1,7 +1,9 @@
 package com.bertosoft.horoscapp.ui.luck
 
 import android.animation.ObjectAnimator
+import android.content.Intent
 import android.os.Bundle
+import android.view.ActionProvider
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +16,10 @@ import androidx.core.animation.doOnEnd
 import androidx.core.view.isVisible
 import com.bertosoft.horoscapp.R
 import com.bertosoft.horoscapp.databinding.FragmentLuckBinding
+import com.bertosoft.horoscapp.ui.providers.RandomCardProvider
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Random
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -23,6 +27,9 @@ class LuckFragment : Fragment() {
 
     private var _binding: FragmentLuckBinding? = null
     private val binding get() = _binding!!
+
+    @Inject
+    lateinit var randomCardProvider: RandomCardProvider
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,7 +39,30 @@ class LuckFragment : Fragment() {
     private fun initUi() {
         binding.prediction.isVisible = false
         binding.preview.isVisible = true
+        preparePrediction()
         initListeners()
+    }
+
+    private fun preparePrediction() {
+        val luck = randomCardProvider.getLucky()
+
+        luck?.let { luckIterador ->
+            val currentPrediction = getString(luckIterador.text)
+            binding.tvLucky.text = currentPrediction
+            binding.ivLuckyCard.setImageResource(luckIterador.image)
+            binding.tvShare.setOnClickListener { shareResult(currentPrediction) }
+        }
+    }
+
+    private fun shareResult(prediction: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, prediction)
+            type = "text/plain"
+        }
+
+        val sharedIntent = Intent.createChooser(sendIntent, null)
+        startActivity(sendIntent)
     }
 
     private fun initListeners() {

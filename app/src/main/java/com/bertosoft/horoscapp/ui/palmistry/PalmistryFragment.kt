@@ -1,12 +1,18 @@
 package com.bertosoft.horoscapp.ui.palmistry
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import com.bertosoft.horoscapp.R
 import com.bertosoft.horoscapp.databinding.FragmentPalmistryBinding
@@ -27,7 +33,7 @@ class PalmistryFragment : Fragment() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if(isGranted){
-            // StartCamera
+            startCamera()
         }
         else{
             Toast.makeText(requireContext(), "Acepta los permisos, para poder continuar", Toast.LENGTH_LONG).show()
@@ -39,12 +45,35 @@ class PalmistryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if(checkCameraPermission()){
-            // Permiso aceptado
+            startCamera()
         }
         else{
             requestPermissionLauncher.launch(CAMERA_PERMISSION)
         }
 
+    }
+
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+
+        cameraProviderFuture.addListener({
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+            val preview = Preview.Builder()
+                .build()
+                .also {
+                    it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+                }
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview)
+            }
+            catch (e:Exception){
+                Log.e("Alberto", "Algo Peto ${e.message}")
+            }
+
+        }, ContextCompat.getMainExecutor(requireContext()))
     }
 
     fun checkCameraPermission():Boolean {
